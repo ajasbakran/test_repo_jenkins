@@ -11,7 +11,7 @@ pipeline {
         stage('Manual Approval') {
             steps {
                 script {
-                    def approvalInput = input(
+                    approvalInput = input(  // Declare this variable at the pipeline level or globally within the script block
                         id: 'manualApproval',
                         message: 'Do you want to proceed?',
                         submitter: 'user1,user2',
@@ -24,9 +24,8 @@ pipeline {
                         ]
                     )
 
-                    if (approvalInput['APPROVAL'] == 'Yes') {  // Accessing choice parameter correctly
+                    if (approvalInput['APPROVAL'] == 'Yes') {
                         echo 'Proceeding with the deployment...'
-                        // Add deployment steps here or move to the Deploy stage
                     } else {
                         error('Deployment rejected by the approver.')
                     }
@@ -36,10 +35,11 @@ pipeline {
 
         stage('Deploy') {
             when {
-                expression { approvalInput?.APPROVAL == 'Yes' }  // Ensures this stage runs only if approved
+                expression { approvalInput['APPROVAL'] == 'Yes' }  // Use the correct way to access the choice parameter
             }
             steps {
-                echo "deployed"
+                // Your deployment steps here
+                echo 'Deploying...'
             }
         }
     }
