@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                // Your build steps here
+                echo "built"
             }
         }
 
@@ -24,9 +24,9 @@ pipeline {
                         ]
                     )
 
-                    if (approvalInput == 'Yes') {
+                    if (approvalInput['APPROVAL'] == 'Yes') {  // Accessing choice parameter correctly
                         echo 'Proceeding with the deployment...'
-                        // Add deployment steps here
+                        // Add deployment steps here or move to the Deploy stage
                     } else {
                         error('Deployment rejected by the approver.')
                     }
@@ -35,8 +35,11 @@ pipeline {
         }
 
         stage('Deploy') {
+            when {
+                expression { approvalInput?.APPROVAL == 'Yes' }  // Ensures this stage runs only if approved
+            }
             steps {
-                // Your deployment steps here
+                echo "deployed"
             }
         }
     }
